@@ -1,5 +1,5 @@
-#ifndef XFTP_TASK_H
-#define XFTP_TASK_H
+#ifndef task_H
+#define task_H
 
 #include <event2/bufferevent.h>
 #include <string>
@@ -40,7 +40,7 @@ public:
     std::string root_dir = "/";
     std::string ip_ = "";
     int port_ = 0;
-    XFtpTask *xftp_task_ = nullptr;
+    XFtpTask *task_ = nullptr;
 
 protected:
     static void EventCallBack(bufferevent *, short, void *);

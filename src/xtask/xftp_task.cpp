@@ -9,7 +9,7 @@
 void XFtpTask::ConnectToPORT()
 {
     xlog("XFtpTask::ConnectToPORT() : ");
-    if (xftp_task_->ip_.empty() || xftp_task_->port_ <= 0 || !xftp_task_->event_base_)
+    if (task_->ip_.empty() || task_->port_ <= 0 || !task_->event_base_)
     {
         std::cout << " ConnectToPORT failed!!!" << std::endl;
         return;
@@ -20,12 +20,12 @@ void XFtpTask::ConnectToPORT()
         buf_event_ = nullptr;
     }
 
-    buf_event_ = bufferevent_socket_new(xftp_task_->event_base_, -1, BEV_OPT_CLOSE_ON_FREE);
+    buf_event_ = bufferevent_socket_new(task_->event_base_, -1, BEV_OPT_CLOSE_ON_FREE);
     sockaddr_in sin;
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
-    evutil_inet_pton(AF_INET, xftp_task_->ip_.c_str(), &sin.sin_addr.s_addr);
-    sin.sin_port = htons(xftp_task_->port_);
+    evutil_inet_pton(AF_INET, task_->ip_.c_str(), &sin.sin_addr.s_addr);
+    sin.sin_port = htons(task_->port_);
 
     SetCallBack(buf_event_);
 
@@ -80,7 +80,7 @@ void XFtpTask::SendMsg(const char *data, size_t len)
 void XFtpTask::ResCMD(std::string msg)
 {
     xlog("At XFtpTask::ResCMD");
-    if (!xftp_task_ || !xftp_task_->buf_event_)
+    if (!task_ || !task_->buf_event_)
     {
         return;
     }
@@ -90,7 +90,7 @@ void XFtpTask::ResCMD(std::string msg)
     {
         msg += "\r\n";
     }
-    bufferevent_write(xftp_task_->buf_event_, msg.c_str(), msg.size());
+    bufferevent_write(task_->buf_event_, msg.c_str(), msg.size());
 }
 
 void XFtpTask::ReadCallBack(bufferevent *buf_event, void *arg)
@@ -108,7 +108,7 @@ void XFtpTask::WriteCallBack(bufferevent *buf_event, void *arg)
 void XFtpTask::EventCallBack(bufferevent *buf_event, short events, void *arg)
 {
     XFtpTask *task = (XFtpTask *)arg;
-    task->Event(buf_event);
+    task->Event(buf_event, events);
 }
 
 XFtpTask::~XFtpTask()
